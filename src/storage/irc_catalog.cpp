@@ -453,27 +453,40 @@ unique_ptr<Catalog> IRCatalog::Attach(optional_ptr<StorageExtensionInfo> storage
 
 		if (lower_name == "endpoint_type") {
 			endpoint_type_string = StringUtil::Lower(entry.second.ToString());
-		} else if (lower_name == "authorization_type") {
+			continue;
+		}
+		if (lower_name == "authorization_type") {
 			authorization_type_string = StringUtil::Lower(entry.second.ToString());
-		} else if (lower_name == "access_delegation_mode") {
+			continue;
+		}
+		if (lower_name == "access_delegation_mode") {
 			access_mode_string = StringUtil::Lower(entry.second.ToString());
-		} else if (lower_name == "endpoint") {
+			continue;
+		}
+		if (lower_name == "endpoint") {
 			attach_options.endpoint = StringUtil::Lower(entry.second.ToString());
 			StringUtil::RTrim(attach_options.endpoint, "/");
-		} else if (lower_name == "support_stage_create") {
+			continue;
+		}
+		if (lower_name == "support_stage_create") {
 			auto result = entry.second.DefaultCastAs(LogicalType::BOOLEAN).GetValue<bool>();
 			attach_options.supports_stage_create = result;
 			set_by_attach_options.insert("supports_stage_create");
-		} else if (lower_name == "support_nested_namespaces") {
+			continue;
+		}
+		if (lower_name == "support_nested_namespaces") {
 			attach_options.support_nested_namespaces =
 			    entry.second.DefaultCastAs(LogicalType::BOOLEAN).GetValue<bool>();
 			set_by_attach_options.insert("support_nested_namespaces");
-		} else if (lower_name == "purge_requested") {
+			continue;
+		}
+		if (lower_name == "purge_requested") {
 			attach_options.purge_requested = entry.second.DefaultCastAs(LogicalType::BOOLEAN).GetValue<bool>();
 			set_by_attach_options.insert("purge_requested");
-		} else {
-			attach_options.options.emplace(std::move(entry));
+			continue;
 		}
+		// Only unhandled options get added to options
+		attach_options.options.emplace(std::move(entry));
 	}
 	IcebergEndpointType endpoint_type = IcebergEndpointType::INVALID;
 	//! Then check any if the 'endpoint_type' is set, for any well known catalogs
